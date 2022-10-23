@@ -23,12 +23,12 @@ from web_basic_function import driverBuild, try_elem_click, try_elem_send
 
 url = "https://www.ebi.ac.uk/ena/browser/search"
 
-driver = driverBuild('n')
+driver = driverBuild('y')
 
 wait_time = 60
 wait = ui.WebDriverWait(driver, wait_time)
 #  biosample = 'PRJNA119571'
-inp = '/home/ecs-user/src/py/biosample_id.txt'
+inp = '/home/fzr/Downloads/biosample_id.txt'
 biosamples = []
 with open(inp, 'r') as fn:
     for line in fn:
@@ -39,29 +39,38 @@ print(biosamples)
 
 for biosample in biosamples:
     driver.get(url)
+
     if try_elem_send(wait, '//*[@id="topSearchDiv"]/div[2]/form/div/div[1]/input', 'xpath', biosample, driver):
-        continue
+        pass
     else:
         print(f'{biosample} count a error')
+        continue
+    print('here')
     if try_elem_click(wait, '//*[@id="topSearchDiv"]/div[2]/form/div/div[2]/button', 'xpath', driver):
-        continue
+        pass
     else:
         print(f'{biosample} count a error')
+        continue
+    # show column selection
     if try_elem_click(wait, '//*[@id="mat-expansion-panel-header-0"]/span[1]/mat-panel-description/span', 'xpath', driver):
-        continue
+        pass
     else:
         print(f'{biosample} count a error')
-    if try_elem_click(wait, '//*[@id="mat-checkbox-10"]/label/div', 'xpath', driver):
         continue
+    # aspera checkbox
+    if driver.find_element(by='xpath', value='//*[@id="mat-checkbox-10-input"]').is_selected():
+        pass
+    else:
+        if try_elem_click(wait, '//*[@id="mat-checkbox-10"]/label/div', 'xpath', driver):
+            pass
+        else:
+            print(f'{biosample} count a error')
+            continue
+    # download txt file
+    if try_elem_click(wait, '//*[@id="view-content-col"]/div[4]/div/div[2]/app-read-file-links/div/div[2]/div[1]/a[2]', 'xpath', driver):
+        pass
     else:
         print(f'{biosample} count a error')
-    if try_elem_click(wait, '//*[@id="view-content-col"]/div[4]/div/div[2]/app-read-file-links/div/div[2]/div[1]/a[1]', 'xpath', driver):
         continue
-    else:
-        print(f'{biosample} count a error')
-    # download JSON file
-    if try_elem_click(wait, '//*[@id="view-content-col"]/div[4]/div/div[2]/app-read-file-links/div/div[2]/div[1]/a[1]', 'xpath', driver):
-        continue
-    else:
-        print(f'{biosample} count a error')
  
+# TODO: 需要写一个检测appera 是否勾选的脚本,不然有一半的txt文件下载不到aspera file

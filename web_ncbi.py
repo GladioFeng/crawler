@@ -109,3 +109,5 @@ for i in url_pool:
     fo.write(f'{count} record downlaod finished' + "\n")
     print(f'current url is {i}')
 fo.close()
+
+driver.close()
