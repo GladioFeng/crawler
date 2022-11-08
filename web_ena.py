@@ -7,19 +7,19 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options 
 from selenium.webdriver.support import ui
 import subprocess
-from web_basic_function import driverBuild, try_elem_click, try_elem_send
+from web_basic_function import driverBuild, try_elem_click, try_elem_send, checkbox
 
-#  help = '''
-#  options:
-    #  -i: biosample list file, one line one record
-#  '''
-#
-#  for i in range(1, len(sys.argv)):
-    #  if sys.argv[i] == '-i':
-        #  inp = sys.argv[i+1]
-    #  elif sys.argv[i] == '-h':
-        #  print(help)
-        #  sys.exit()
+help = '''
+options:
+    -i: biosample list file, one line one record
+'''
+
+for i in range(1, len(sys.argv)):
+    if sys.argv[i] == '-i':
+        inp = sys.argv[i+1]
+    elif sys.argv[i] == '-h':
+        print(help)
+        sys.exit()
 
 url = "https://www.ebi.ac.uk/ena/browser/search"
 
@@ -27,8 +27,6 @@ driver = driverBuild('y')
 
 wait_time = 60
 wait = ui.WebDriverWait(driver, wait_time)
-#  biosample = 'PRJNA119571'
-inp = '/home/fzr/Downloads/biosample_id.txt'
 biosamples = []
 with open(inp, 'r') as fn:
     for line in fn:
@@ -43,34 +41,36 @@ for biosample in biosamples:
     if try_elem_send(wait, '//*[@id="topSearchDiv"]/div[2]/form/div/div[1]/input', 'xpath', biosample, driver):
         pass
     else:
-        print(f'{biosample} count a error')
+        print(f'{biosample} count a error in input biosample part')
         continue
     print('here')
     if try_elem_click(wait, '//*[@id="topSearchDiv"]/div[2]/form/div/div[2]/button', 'xpath', driver):
         pass
     else:
-        print(f'{biosample} count a error')
+        print(f'{biosample} count a error in click search buttorn')
         continue
     # show column selection
     if try_elem_click(wait, '//*[@id="mat-expansion-panel-header-0"]/span[1]/mat-panel-description/span', 'xpath', driver):
         pass
     else:
-        print(f'{biosample} count a error')
+        print(f'{biosample} count a error in expand cloumn selection')
         continue
-    # aspera checkbox
-    if driver.find_element(by='xpath', value='//*[@id="mat-checkbox-10-input"]').is_selected():
-        pass
-    else:
-        if try_elem_click(wait, '//*[@id="mat-checkbox-10"]/label/div', 'xpath', driver):
+    # fill checkbox
+    checkbox_list = ['9', '10', '14', '20', '22', '23', '24', '33']
+    for i in checkbox_list:
+        if checkbox('xpath',f'//*[@id="mat-checkbox-{i}-input"]', f'//*[@id="mat-checkbox-{i}"]/label/div', driver, biosample, wait):
             pass
         else:
-            print(f'{biosample} count a error')
             continue
-    # download txt file
-    if try_elem_click(wait, '//*[@id="view-content-col"]/div[4]/div/div[2]/app-read-file-links/div/div[2]/div[1]/a[2]', 'xpath', driver):
+    if checkbox('xpath',f'//*[@id="mat-checkbox-{i}-input"]', f'//*[@id="mat-checkbox-{i}"]/label/div', driver, biosample, wait):
         pass
     else:
-        print(f'{biosample} count a error')
+        continue
+    # download json file
+    if try_elem_click(wait, '//*[@id="view-content-col"]/div[4]/div/div[2]/app-read-file-links/div/div[2]/div[1]/a[1]', 'xpath', driver):
+        pass
+    else:
+        print(f'{biosample} count a error in download json file')
         continue
  
-# TODO: 需要写一个检测appera 是否勾选的脚本,不然有一半的txt文件下载不到aspera file
+driver.close()

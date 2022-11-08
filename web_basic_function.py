@@ -110,3 +110,14 @@ def driverBuild(enable_headless):
     return driver
 
 
+def checkbox(by_method, input_value, div_value, driver, biosample, wait):
+    if driver.find_element(by=by_method, value=input_value).is_selected():
+        return True
+        pass
+    else:
+        if try_elem_click(wait, div_value, by_method, driver):
+            return True
+            pass
+        else:
+            print(f'{biosample} count a error in checkbox part')
+            return False
