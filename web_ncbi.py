@@ -60,8 +60,12 @@ try_elem_click(wait, '//*[@id="_studyTypeGds"]/li/ul/li[1]/a', 'xpath', driver)
 # get total_info
 total_info = driver.find_element(by = 'xpath', value = '//*[@id="maincontent"]/div/div[3]/div[1]/h3')
 string = total_info.text
-matchObj = re.match("Items: 1 to (\d*) of (\d*)", string)
-total_record = matchObj.group(2)
+try:
+    matchObj = re.match("Items: 1 to (\d*) of (\d*)", string)
+    total_record = matchObj.group(2)
+except AttributeError:
+    matchObj = re.match("Items: (\d*)", string)
+    total_record = matchObj.group(1)
 print(f'total_record is {total_record}')
 
 # 6. expand record to 500
@@ -110,4 +114,6 @@ for i in url_pool:
     print(f'current url is {i}')
 fo.close()
 
-driver.close()
+driver.quit()
+cmd = '[-e /home/fzr/Downloads/SraRunTable.txt ] || rm /home/fzr/Downloads/SraRunTable.txt'
+subprocess.run(cmd)
